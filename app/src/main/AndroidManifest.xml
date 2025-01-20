@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    package="edu.ivanferrerfranco.dondeestamicoche">
+
+    <!-- Permiso para obtener la ubicación aproximada del dispositivo -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- Permiso para obtener la ubicación precisa del dispositivo -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Permiso para realizar conexiones a Internet -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Permiso para programar alarmas exactas (necesario en Android 12+) -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+
+    <!-- Permiso para mostrar notificaciones (necesario en Android 13+) -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- Permiso para usar la cámara del dispositivo -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Permisos para leer y escribir en el almacenamiento externo -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <!-- Declarar el uso opcional de la cámara -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher2"
+        android:label="DondeEstaMiCoche"
+        android:roundIcon="@mipmap/ic_launcher2_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.DondeEstaMiCoche"
+        tools:targetApi="31">
+
+        <!-- Actividad para manejar ajustes de usuario -->
+        <activity
+            android:name=".AjustesActivity"
+            android:exported="false" />
+
+        <!-- Actividad para mostrar los aparcamientos en un mapa -->
+        <activity
+            android:name=".AparcamientosMapaActivity"
+            android:exported="false" />
+
+        <!-- BroadcastReceiver para manejar alarmas -->
+        <receiver android:name=".receivers.AlarmReceiver" />
+
+        <!-- Actividad para visualizar las ubicaciones guardadas -->
+        <activity
+            android:name=".LugaresActivity"
+            android:exported="false" />
+
+        <!-- Actividad para manejar el mapa principal -->
+        <activity
+            android:name=".MapaActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
+        <!-- Configuración de clave API de Google Maps -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <!-- Pantalla de carga inicial -->
+        <activity
+            android:name=".SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.SplashScreen">
+            <intent-filter>
+                <!-- Define esta actividad como la principal -->
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actividad principal de la aplicación -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true" />
+    </application>
+</manifest>

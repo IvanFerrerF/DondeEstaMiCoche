@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity"
+    android:background="@color/black"
+    >
+
+    <ImageView
+        android:id="@+id/img_logo"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:contentDescription="@string/imagen_principal_de_la_aplicaci_n"
+        android:src="@drawable/demc_logo_gold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:id="@+id/moving_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:background="@color/gold"
+        app:layout_constraintTop_toTopOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/text_brain"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintTop_toTopOf="@id/guideline2"
+        app:layout_constraintStart_toStartOf="@id/guideline7"
+        app:layout_constraintEnd_toStartOf="@+id/text_lugares">
+
+        <TextView
+            android:id="@+id/btn_brain"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            app:drawableTopCompat="@drawable/brain_icon"
+            android:padding="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:contentDescription="@string/memorizar_ubicaci_n"
+            />
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/gold"
+            android:text="@string/memoria"
+            android:textStyle="bold"
+            android:gravity="center" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_car"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@id/text_aparcamientos"
+        app:layout_constraintStart_toStartOf="@id/guideline7"
+        app:layout_constraintTop_toTopOf="@id/guideline3"
+        android:layout_marginStart="17dp">
+
+        <TextView
+            android:id="@+id/btn_car"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/coche_icon"
+            android:contentDescription="@string/encontrar_coche"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/encontrar"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_lugares"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/text_brain"
+        app:layout_constraintTop_toTopOf="@id/guideline2"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <TextView
+            android:id="@+id/btn_lugares"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/lugares_icon"
+            android:contentDescription="@string/lugares_donde_he_aparcado"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/lugares"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_ajustes"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@id/guideline2"
+        app:layout_constraintEnd_toStartOf="@id/text_alarma"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:id="@+id/btn_ajustes"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/ajustes_icon"
+            android:contentDescription="@string/ajustes_de_la_aplicaci_n"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/ajustes2"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_alarma"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toStartOf="@id/guideline6"
+        app:layout_constraintStart_toEndOf="@id/text_ajustes"
+        app:layout_constraintTop_toTopOf="@id/guideline2">
+
+        <TextView
+            android:id="@+id/btn_alarma"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/alarma_icon"
+            android:contentDescription="@string/poner_alarma"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/alarma"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_calendario"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/guideline3"
+        app:layout_constraintEnd_toStartOf="@id/text_compartir">
+
+        <TextView
+            android:id="@+id/btn_calendario"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/calendario_icon"
+            android:contentDescription="@string/agregar_nota_al_calendario"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/calendario"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_compartir"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintStart_toEndOf="@id/text_calendario"
+        app:layout_constraintTop_toTopOf="@id/guideline3"
+        app:layout_constraintEnd_toStartOf="@id/guideline6">
+
+        <TextView
+            android:id="@+id/btn_compartir"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/compartir_icon"
+            android:contentDescription="@string/compartir_ubicaci_n_actual"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/compartir"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/text_aparcamientos"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="@id/guideline3"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/text_car"
+        >
+
+        <TextView
+            android:id="@+id/btn_aparcamientos"
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:background="@drawable/fancy_button"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="16dp"
+            app:drawableTopCompat="@drawable/aparcamiento_icon"
+            android:contentDescription="@string/aparcamientos_p_blicos_cercanos"/>
+
+        <TextView
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/aparcamientos"
+            android:textColor="@color/gold"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Barra de publicidad fija -->
+    <FrameLayout
+        android:id="@+id/adContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/gold"
+        android:layout_gravity="bottom"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <!-- Contenedor de publicidad -->
+        <TextView
+            android:id="@+id/adText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/publicidad_aqu"
+            android:textColor="@color/black"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:padding="16dp" />
+    </FrameLayout>
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="537dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="305dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="243dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="297dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline7"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="296dp" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

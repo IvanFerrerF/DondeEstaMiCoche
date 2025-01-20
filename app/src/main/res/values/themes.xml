@@ -1,0 +1,18 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme -->
+    <style name="Base.Theme.DondeEstaMiCoche" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Personaliza tu tema base aquí si es necesario -->
+    </style>
+
+    <!-- Tema principal de la aplicación -->
+    <style name="Theme.DondeEstaMiCoche" parent="Base.Theme.DondeEstaMiCoche">
+        <item name="android:statusBarColor">@color/black</item>
+    </style>
+
+    <!-- Tema de la Splash Screen -->
+    <style name="Theme.SplashScreen" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/fondo_negro</item>
+        <item name="android:statusBarColor">@color/black</item><!-- Fondo de la Splash Screen -->
+    </style>
+</resources>
+

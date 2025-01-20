@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Estado presionado -->
+    <item android:state_pressed="true">
+        <layer-list>
+            <item>
+                <shape>
+                    <solid android:color="@color/gold_dark" />
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+
+    <!-- Estado normal -->
+    <item>
+        <layer-list>
+            <!-- Sombra -->
+            <item>
+                <shape>
+                    <solid android:color="@color/black" />
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+            <!-- Fondo con gradiente -->
+            <item android:top="4dp" android:left="4dp">
+                <shape>
+                    <gradient
+                        android:angle="270"
+                        android:startColor="@color/gold_light"
+                        android:centerColor="@color/gold"
+                        android:endColor="@color/gold_dark"
+                        android:centerY="0.3" />
+                    <corners android:radius="16dp" />
+                    <stroke android:width="2dp" android:color="@color/gold_light" />
+                </shape>
+            </item>
+        </layer-list>
+    </item>
+</selector>
