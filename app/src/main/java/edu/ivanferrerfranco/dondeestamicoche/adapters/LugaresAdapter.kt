@@ -12,8 +12,8 @@ import androidx.recyclerview.widget.RecyclerView
 import edu.ivanferrerfranco.dondeestamicoche.MapaActivity
 import edu.ivanferrerfranco.dondeestamicoche.R
 import edu.ivanferrerfranco.dondeestamicoche.data.UbicacionCoche
+import edu.ivanferrerfranco.dondeestamicoche.database.SQLiteHelper
 import edu.ivanferrerfranco.dondeestamicoche.dialogs.DetalleLugarDialog
-import edu.ivanferrerfranco.dondeestamicoche.utils.FileHandler
 
 /**
  * Adapter para manejar la lista de ubicaciones del coche en un RecyclerView.
@@ -21,7 +21,7 @@ import edu.ivanferrerfranco.dondeestamicoche.utils.FileHandler
  * @property lugares Lista mutable de ubicaciones del coche.
  */
 class LugarAdapter(
-    private val lugares: MutableList<UbicacionCoche> // Cambiado a MutableList
+    private val lugares: MutableList<UbicacionCoche>
 ) : RecyclerView.Adapter<LugarAdapter.LugarViewHolder>() {
 
     /**
@@ -58,74 +58,65 @@ class LugarAdapter(
     override fun onBindViewHolder(holder: LugarViewHolder, position: Int) {
         val lugar = lugares[position]
 
-        // Configuración de datos para el elemento
+        // Configurar textos para mostrar la dirección, coordenadas y fecha/hora
         holder.tvLugar.text = if (lugar.direccion?.isNotEmpty() == true) lugar.direccion else "Dirección no disponible"
         holder.tvCoordenadas.text = "Lat: ${lugar.latitud}, Lon: ${lugar.longitud}"
         holder.tvFechaHora.text = "Fecha y hora: ${lugar.fecha} ${lugar.hora}"
 
-        // Cambia el semáforo según el estado de 'esActual'
+        // Cambiar el semáforo según el estado de 'esActual'
         val semaforoDrawable = if (lugar.esActual) R.drawable.semaforo_green else R.drawable.semaforo_red
         holder.semaforo.setBackgroundResource(semaforoDrawable)
 
-        // Evento de clic en el elemento
+        // Evento de clic: se muestra un diálogo con opciones de ver mapa, marcar como no aparcado o eliminar
         holder.itemView.setOnClickListener {
             val activity = holder.itemView.context as AppCompatActivity
             val dialog = DetalleLugarDialog(
                 lugar = lugar,
                 rutaFoto = lugar.fotoRuta,
                 onNoAparcado = {
-                    lugar.esActual = false // Marcar como no aparcado
+                    // Marcar como no aparcado y actualizar la vista
+                    lugar.esActual = false
                     notifyItemChanged(position)
                 },
                 onVerMapa = {
-                    // Abrir la actividad del mapa con la posición del lugar
+                    // Abrir MapaActivity con las coordenadas del lugar
                     val intent = Intent(activity, MapaActivity::class.java)
                     intent.putExtra("latitud", lugar.latitud)
                     intent.putExtra("longitud", lugar.longitud)
                     activity.startActivity(intent)
                 },
                 onEliminar = {
-                    // Eliminar el lugar de la lista
+                    // Eliminar el registro de la base de datos y de la lista
+                    val sqliteHelper = SQLiteHelper(activity)
+                    if (lugar.id != null) {
+                        sqliteHelper.borrarUbicacion(lugar.id!!)
+                    }
                     lugares.removeAt(position)
                     notifyItemRemoved(position)
-
-                    // Guardar cambios en el archivo JSON
-                    val fileHandler = FileHandler(
-                        context = activity,
-                        fileName = "ubicaciones.json",
-                        type = UbicacionCoche::class.java
-                    )
-                    fileHandler.write(lugares)
-
                     Toast.makeText(activity, "Aparcamiento eliminado", Toast.LENGTH_SHORT).show()
                 }
             )
             dialog.show(activity.supportFragmentManager, "DetalleLugarDialog")
         }
 
-        // Evento de mantener presionado para eliminar directamente
+        // Evento de mantener presionado: elimina el lugar directamente
         holder.itemView.setOnLongClickListener {
             val activity = holder.itemView.context as AppCompatActivity
+            val sqliteHelper = SQLiteHelper(activity)
+            if (lugar.id != null) {
+                sqliteHelper.borrarUbicacion(lugar.id!!)
+            }
             lugares.removeAt(position)
             notifyItemRemoved(position)
-
-            // Guardar cambios en el archivo JSON
-            val fileHandler = FileHandler(
-                context = activity,
-                fileName = "ubicaciones.json",
-                type = UbicacionCoche::class.java
-            )
-            fileHandler.write(lugares)
-
             Toast.makeText(activity, "Lugar eliminado", Toast.LENGTH_SHORT).show()
             true
         }
     }
 
     /**
-     * Obtiene el tamaño de la lista de lugares.
+     * Retorna el número de elementos en la lista.
      *
-     * @return El número de elementos en la lista.
+     * @return El tamaño de la lista.
      */
     override fun getItemCount() = lugares.size
 }

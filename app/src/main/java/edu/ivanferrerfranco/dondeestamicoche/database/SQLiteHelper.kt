@@ -96,4 +96,13 @@ class SQLiteHelper(context: Context) :
 
     }
 
+    fun borrarUbicacion(id: Long): Int {
+        val db = writableDatabase
+        val filasEliminadas = db.delete(TABLE_UBICACIONES, "$COLUMN_ID = ?", arrayOf(id.toString()))
+        db.close()
+
+        return filasEliminadas
+    }
+
+
 }

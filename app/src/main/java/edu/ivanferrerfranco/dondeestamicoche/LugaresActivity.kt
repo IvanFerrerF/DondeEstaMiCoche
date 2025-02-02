@@ -8,52 +8,43 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import edu.ivanferrerfranco.dondeestamicoche.adapters.LugarAdapter
 import edu.ivanferrerfranco.dondeestamicoche.data.UbicacionCoche
+import edu.ivanferrerfranco.dondeestamicoche.database.SQLiteHelper
 import edu.ivanferrerfranco.dondeestamicoche.databinding.ActivityLugaresBinding
-import edu.ivanferrerfranco.dondeestamicoche.utils.FileHandler
 import java.util.Locale
 import kotlin.concurrent.thread
 
 /**
- * Actividad que muestra una lista de lugares previamente guardados en un archivo.
+ * Actividad que muestra una lista de lugares previamente guardados en SQLite.
  * Incluye funcionalidades para cargar la lista de lugares, ordenarla y actualizar las direcciones
  * utilizando la clase [Geocoder].
  */
 class LugaresActivity : AppCompatActivity() {
 
-    // Enlace a las vistas del diseño de la actividad
+    // Enlace a las vistas del layout de la actividad
     private lateinit var binding: ActivityLugaresBinding
-
-    // Manejador de archivos para leer y escribir datos de ubicaciones
-    private lateinit var fileHandler: FileHandler<UbicacionCoche>
 
     // Adaptador para el RecyclerView que muestra los lugares
     private lateinit var lugarAdapter: LugarAdapter
 
-    /**
-     * Método llamado al crear la actividad.
-     * Configura la lista de lugares y su presentación en el RecyclerView.
-     */
+    // Instancia del helper de SQLite
+    private lateinit var sqliteHelper: SQLiteHelper
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLugaresBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Inicializar el manejador de archivos para las ubicaciones
-        fileHandler = FileHandler(
-            context = this,
-            fileName = "ubicaciones.json",
-            type = UbicacionCoche::class.java
-        )
+        // Inicializar el helper de SQLite para las ubicaciones
+        sqliteHelper = SQLiteHelper(this)
 
-        // Leer los lugares guardados en el archivo
-        var lugares = fileHandler.read()?.toMutableList() ?: mutableListOf()
+        // Leer los lugares guardados en la base de datos SQLite
+        var lugares = sqliteHelper.obtenerUbicaciones().toMutableList()
 
         // Invertir el orden para mostrar los lugares más recientes primero
         lugares = lugares.asReversed()
 
         // Configurar el adaptador para el RecyclerView
         lugarAdapter = LugarAdapter(lugares)
-
         binding.recyclerViewLugares.apply {
             layoutManager = LinearLayoutManager(this@LugaresActivity)
             adapter = lugarAdapter
@@ -64,10 +55,8 @@ class LugaresActivity : AppCompatActivity() {
     }
 
     /**
-     * Método para actualizar las direcciones de los lugares utilizando coordenadas GPS.
-     * Usa la clase [Geocoder] para convertir latitud y longitud en direcciones legibles.
-     *
-     * @param lugares Lista de lugares a procesar para obtener sus direcciones.
+     * Actualiza las direcciones de los lugares utilizando el Geocoder.
+     * Para cada lugar se obtienen los datos de la dirección basados en sus coordenadas.
      */
     @SuppressLint("NotifyDataSetChanged")
     private fun actualizarDirecciones(lugares: List<UbicacionCoche>) {
@@ -84,7 +73,7 @@ class LugaresActivity : AppCompatActivity() {
                         "Dirección desconocida"
                     }
                 } catch (e: Exception) {
-                    // Capturar errores al procesar direcciones
+                    // En caso de error, se asigna un mensaje de error
                     lugar.direccion = "Error al obtener dirección"
                 }
                 // Actualizar el adaptador en el hilo principal
