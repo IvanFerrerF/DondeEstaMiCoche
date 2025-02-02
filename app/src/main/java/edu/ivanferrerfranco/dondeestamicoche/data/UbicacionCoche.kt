@@ -3,6 +3,8 @@ package edu.ivanferrerfranco.dondeestamicoche.data
 /**
  * Representa la información relacionada con la ubicación del coche.
  *
+ * @property id Identificador único de la ubicación (generado por SQLite).
+ *              Es nulo cuando se crea una nueva instancia y se asigna al insertarla en la base de datos.
  * @property latitud Coordenada de latitud de la ubicación del coche.
  * @property longitud Coordenada de longitud de la ubicación del coche.
  * @property fecha Fecha en la que se registró la ubicación (formato dd/MM/yyyy).
@@ -13,6 +15,7 @@ package edu.ivanferrerfranco.dondeestamicoche.data
  * @property fechaHoraSalida Fecha y hora en la que se registró la salida de la ubicación (puede ser nula).
  */
 data class UbicacionCoche(
+    val id: Long? = null,
     val latitud: Double,
     val longitud: Double,
     val fecha: String,

@@ -1,35 +1,26 @@
 package edu.ivanferrerfranco.dondeestamicoche
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import android.provider.Settings
-import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Bundle
+import android.provider.Settings
+import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import edu.ivanferrerfranco.dondeestamicoche.database.SQLiteHelper
 import edu.ivanferrerfranco.dondeestamicoche.databinding.ActivityAjustesBinding
-import edu.ivanferrerfranco.dondeestamicoche.utils.FileHandler
 import edu.ivanferrerfranco.dondeestamicoche.data.UbicacionCoche
 import edu.ivanferrerfranco.dondeestamicoche.dialogs.RadioBusquedaDialogFragment
 
-/**
- * Actividad para gestionar ajustes de la aplicación.
- *
- * Proporciona opciones para borrar el historial de lugares, configurar el radio de búsqueda,
- * gestionar permisos y mostrar información sobre la funcionalidad de cambio de idioma.
- */
 class AjustesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAjustesBinding
     private val REQUEST_PERMISSION_CODE = 1001
 
-    /**
-     * Lista de permisos que deben ser gestionados por la aplicación.
-     */
     private val permisos = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
         Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -41,13 +32,6 @@ class AjustesActivity : AppCompatActivity() {
         binding = ActivityAjustesBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        /**
-         * Configuración de botones:
-         * - Borrar historial de lugares.
-         * - Ajustar el radio de búsqueda.
-         * - Gestionar permisos.
-         * - Mostrar información sobre cambio de idioma.
-         */
         binding.btnBorrarHistorial.setOnClickListener {
             mostrarConfirmacionBorrarHistorial()
         }
@@ -68,50 +52,27 @@ class AjustesActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Muestra un diálogo de confirmación para borrar el historial.
-     */
     private fun mostrarConfirmacionBorrarHistorial() {
-        val builder = AlertDialog.Builder(this)
-        builder.setTitle("Confirmar acción")
+        AlertDialog.Builder(this)
+            .setTitle("Confirmar acción")
             .setMessage("¿Estás seguro de que deseas borrar todo el historial de lugares guardados? Esta acción no se puede deshacer.")
             .setPositiveButton("Borrar") { _, _ -> borrarHistorial() }
             .setNegativeButton("Cancelar") { dialog, _ -> dialog.dismiss() }
             .create().show()
     }
 
-    /**
-     * Borra el historial de lugares guardados escribiendo una lista vacía en el archivo de almacenamiento.
-     */
     private fun borrarHistorial() {
-        val fileHandler = FileHandler(
-            context = this,
-            fileName = "ubicaciones.json",
-            type = UbicacionCoche::class.java
-        )
-        if (fileHandler.write(emptyList())) {
-            Toast.makeText(this, "Historial borrado correctamente.", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(this, "Error al borrar el historial.", Toast.LENGTH_SHORT).show()
-        }
+        val sqliteHelper = SQLiteHelper(this)
+        sqliteHelper.borrarHistorial()
+        Toast.makeText(this, "Historial borrado correctamente.", Toast.LENGTH_SHORT).show()
     }
 
-    /**
-     * Guarda el radio de búsqueda seleccionado en las preferencias compartidas.
-     *
-     * @param radio Radio en metros seleccionado por el usuario.
-     */
     private fun guardarRadioBusqueda(radio: Int) {
         val sharedPreferences = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
         sharedPreferences.edit().putInt("radio_busqueda", radio).apply()
         Toast.makeText(this, "Radio de búsqueda guardado: $radio metros", Toast.LENGTH_SHORT).show()
     }
 
-    /**
-     * Solicita al usuario que conceda un permiso específico.
-     *
-     * @param permiso Permiso que se desea solicitar.
-     */
     private fun pedirPermiso(permiso: String) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permiso)) {
             AlertDialog.Builder(this)
@@ -128,11 +89,6 @@ class AjustesActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Muestra un diálogo explicando cómo revocar permisos concedidos.
-     *
-     * @param permiso Permiso que se desea gestionar.
-     */
     private fun mostrarDialogoIrAConfiguracion(permiso: String) {
         AlertDialog.Builder(this)
             .setTitle("Revocar permiso")
@@ -150,11 +106,6 @@ class AjustesActivity : AppCompatActivity() {
             .show()
     }
 
-    /**
-     * Abre la configuración de la aplicación para gestionar permisos manualmente.
-     *
-     * @param context Contexto de la actividad actual.
-     */
     private fun abrirConfiguracionDeAplicacion(context: Context) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
@@ -162,9 +113,6 @@ class AjustesActivity : AppCompatActivity() {
         context.startActivity(intent)
     }
 
-    /**
-     * Muestra un diálogo explicando por qué el cambio de idioma está deshabilitado temporalmente.
-     */
     private fun mostrarDialogoExplicativo() {
         val mensajeExplicativo = """
             NOTA:
@@ -187,9 +135,6 @@ class AjustesActivity : AppCompatActivity() {
             .show()
     }
 
-    /**
-     * Callback que maneja el resultado de las solicitudes de permisos.
-     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
