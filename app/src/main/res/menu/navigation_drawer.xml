@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_ayuda"
+            android:icon="@android:drawable/ic_menu_help"
+            android:title="Ayuda"/>
+
+        <item
+            android:id="@+id/nav_brain"
+            android:icon="@drawable/brain_icon"
+            android:title="Memorizar ubicación" />
+
+        <item
+            android:id="@+id/nav_car"
+            android:icon="@drawable/coche_icon"
+            android:title="Encontrar coche"/>
+
+        <item
+            android:id="@+id/nav_lugares"
+            android:icon="@drawable/lugares_icon"
+            android:title="Historial de ubicaciones"/>
+
+        <item
+            android:id="@+id/nav_aparcamientos"
+            android:icon="@drawable/aparcamiento_icon"
+            android:title="Aparcamientos cercanos"/>
+
+        <item
+            android:id="@+id/nav_alarma"
+            android:icon="@drawable/alarma_icon"
+            android:title="Alarma"/>
+
+        <item
+            android:id="@+id/nav_calendario"
+            android:icon="@drawable/calendario_icon"
+            android:title="Agregar al calendario"/>
+
+        <item
+            android:id="@+id/nav_compartir"
+            android:icon="@drawable/compartir_icon"
+            android:title="Compartir ubicación"/>
+
+        <item
+            android:id="@+id/nav_ajustes"
+            android:icon="@drawable/ajustes_icon"
+            android:title="Configuración"/>
+
+    </group>
+
+</menu>

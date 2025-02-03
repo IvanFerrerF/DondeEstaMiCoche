@@ -14,10 +14,13 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.android.car.ui.toolbar.MenuItem
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.material.navigation.NavigationView
 import edu.ivanferrerfranco.dondeestamicoche.data.UbicacionCoche
 import edu.ivanferrerfranco.dondeestamicoche.database.SQLiteHelper
 import edu.ivanferrerfranco.dondeestamicoche.databinding.ActivityMainBinding
@@ -32,8 +35,9 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import androidx.core.view.GravityCompat
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -56,6 +60,20 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        // Configurar Toolbar
+        setSupportActionBar(binding.toolbar)
+
+        // Configurar el DrawerLayout con Toggle
+        val toggle = ActionBarDrawerToggle(
+            this, binding.drawerLayout, binding.toolbar,
+            R.string.navigation_drawer_open, R.string.navigation_drawer_close
+        )
+        binding.drawerLayout?.addDrawerListener(toggle)
+        toggle.syncState()
+
+        // Configurar NavigationView
+        binding.navView?.setNavigationItemSelectedListener(this)
 
         // Restauración del estado (si se dispone de datos)
         mostrarDialogoDetener = savedInstanceState?.getBoolean("mostrarDialogoDetener", false)
@@ -548,4 +566,68 @@ class MainActivity : AppCompatActivity() {
     private fun configurarBarraPublicidad() {
         binding.adText.text = "¡Oferta especial! 🚗 10% de descuento en estacionamientos."
     }
+
+
+
+    override fun onBackPressed() {
+        // Cerrar el Drawer si está abierto
+        if (binding.drawerLayout?.isDrawerOpen(GravityCompat.START) == true) {
+            binding.drawerLayout!!.closeDrawer(GravityCompat.START)
+        } else {
+            super.onBackPressed()
+        }
+    }
+
+    override fun onNavigationItemSelected(item: android.view.MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.nav_ayuda -> {
+                // Lógica para la ayuda
+                //startActivity(Intent(this, AyudaActivity::class.java))
+            }
+            R.id.nav_brain -> {
+                // Ejecutar el método para guardar ubicación
+                startActivity(Intent(this, GuardarAparcamientoDialog::class.java))
+            }
+            R.id.nav_car -> {
+                // Ejecutar el método para encontrar coche
+                startActivity(Intent(this, MapaActivity::class.java))
+            }
+            R.id.nav_lugares -> {
+                // Abrir lista de lugares
+                startActivity(Intent(this, LugaresActivity::class.java))
+            }
+            R.id.nav_aparcamientos -> {
+                // Buscar aparcamientos cercanos
+                obtenerUbicacionActual { latitud, longitud ->
+                    buscarAparcamientosCercanos(latitud, longitud)
+                }
+            }
+            R.id.nav_alarma -> {
+                // Configurar alarma
+                startActivity(Intent(this, AlarmaDialog::class.java))
+            }
+            R.id.nav_calendario -> {
+                // Agregar evento al calendario
+                agregarEventoCalendario(
+                    titulo = "Revisar el coche",
+                    ubicacion = "Aparcamiento Central",
+                    descripcion = "Revisar el coche estacionado",
+                    inicio = System.currentTimeMillis() + 3600000,
+                    fin = System.currentTimeMillis() + 7200000
+                )
+            }
+            R.id.nav_compartir -> {
+                // Compartir ubicación
+                compartirUbicacion()
+            }
+            R.id.nav_ajustes -> {
+                // Abrir configuración
+                startActivity(Intent(this, AjustesActivity::class.java))
+            }
+        }
+        // Cerrar el Drawer después de seleccionar una opción
+        binding.drawerLayout?.closeDrawer(GravityCompat.START)
+        return true
+    }
+
 }

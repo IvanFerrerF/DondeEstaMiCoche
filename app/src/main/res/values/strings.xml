@@ -48,4 +48,6 @@
     <string name="compartir_ubicaci_n_actual">Compartir ubicación actual</string>
     <string name="imagen_principal_de_la_aplicaci_n">Imagen principal de la aplicación</string>
     <string name="imagen_de_ajustes">Imagen de ajustes</string>
+    <string name="navigation_drawer_open">Abrir menú</string>
+    <string name="navigation_drawer_close">Cerrar menú</string>
 </resources>
