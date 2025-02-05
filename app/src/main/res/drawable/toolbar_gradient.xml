@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+
+    <!-- Gradiente parecido al de tus TextView -->
+    <gradient
+        android:angle="270"
+        android:startColor="@color/gold_light"
+        android:centerColor="@color/gold"
+        android:endColor="@color/gold_dark"
+        android:centerY="0.3" />
+
+    <!-- Borde opcional -->
+    <stroke
+        android:width="2dp"
+        android:color="@color/gold_light" />
+
+    <!-- Esquinas redondeadas (si deseas) -->
+    <corners android:radius="16dp" />
+</shape>

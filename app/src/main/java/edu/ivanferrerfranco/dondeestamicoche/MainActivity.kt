@@ -585,8 +585,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 //startActivity(Intent(this, AyudaActivity::class.java))
             }
             R.id.nav_brain -> {
-                // Ejecutar el método para guardar ubicación
-                startActivity(Intent(this, GuardarAparcamientoDialog::class.java))
+                // En lugar de startActivity, mostramos el diálogo:
+                val dialog = GuardarAparcamientoDialog(
+                    onGuardar = {
+                        // Lógica que desees al pulsar en "Guardar" dentro del diálogo
+                    },
+                    onCancelar = {
+                        // Lógica que desees al pulsar en "Cancelar" dentro del diálogo
+                    }
+                )
+                dialog.show(supportFragmentManager, "GuardarAparcamientoDialog")
             }
             R.id.nav_car -> {
                 // Ejecutar el método para encontrar coche
@@ -603,8 +611,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                 }
             }
             R.id.nav_alarma -> {
-                // Configurar alarma
-                startActivity(Intent(this, AlarmaDialog::class.java))
+                val dialog = AlarmaDialog(
+                    onAceptar = { calendar ->
+                        // Lógica cuando se confirma la hora, p. ej. configurarAlarma(calendar)
+                    },
+                    onCancelar = {
+                        // Lógica de cancelación
+                    }
+                )
+                dialog.show(supportFragmentManager, "AlarmaDialog")
             }
             R.id.nav_calendario -> {
                 // Agregar evento al calendario

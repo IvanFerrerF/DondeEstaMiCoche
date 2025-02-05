@@ -4,4 +4,18 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+    <style name="ThemeOverlay.AppCompat.Dark.ActionBar" parent="">
+        <!-- Cambia la altura de la Toolbar -->
+        <item name="android:height">28dp</item>
+    </style>
+    <!-- Tema principal de la aplicación -->
+    <style name="Theme.DondeEstaMiCoche" parent="Base.Theme.DondeEstaMiCoche">
+        <item name="android:statusBarColor">@color/black</item>
+    </style>
+
+    <!-- Tema de la Splash Screen -->
+    <style name="Theme.SplashScreen" parent="Theme.Material3.Light.NoActionBar">
+        <item name="android:windowBackground">@drawable/fondo_negro</item>
+        <item name="android:statusBarColor">@color/black</item><!-- Fondo de la Splash Screen -->
+    </style>
 </resources>
