@@ -36,6 +36,9 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import androidx.core.view.GravityCompat
+import edu.ivanferrerfranco.dondeestamicoche.firebase.FirebaseManager
+import edu.ivanferrerfranco.dondeestamicoche.utils.ConnectivityHelper
+
 
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
@@ -183,6 +186,28 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         inicializarAlarma()
     }
 
+    override fun onResume() {
+        super.onResume()
+        sincronizarPendientes()
+    }
+
+    private fun sincronizarPendientes() {
+        if (ConnectivityHelper.isOnline(this)) {
+            val pendientes = sqliteHelper.obtenerUbicacionesPendientes()
+            for (ubi in pendientes) {
+                FirebaseManager.subirUbicacion(ubi,
+                    onSuccess = {
+                        sqliteHelper.actualizarSincronizado(ubi.id!!, true)
+                        Log.d("SYNC", "Ubicacion ${ubi.id} sincronizada")
+                    },
+                    onFailure = { e ->
+                        Log.e("SYNC", "Error subiendo ${ubi.id}", e)
+                    }
+                )
+            }
+        }
+    }
+
     private fun guardarUbicacionCoche(callback: (UbicacionCoche) -> Unit) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -208,17 +233,32 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     direccion = "",
                     fecha = fechaHora.split(" ")[0],
                     hora = fechaHora.split(" ")[1],
-                    fotoRuta = rutaFoto
+                    fotoRuta = rutaFoto,
+                    sincronizado = false
                 )
 
                 val id = sqliteHelper.insertarUbicacion(ubicacionCoche)
                 if (id != -1L) {
-                    // Se asigna el id generado
-                    ultimaUbicacion = ubicacionCoche.copy(id = id)
+                    val ubicConId = ubicacionCoche.copy(id = id)
+                    ultimaUbicacion = ubicConId
                     mostrarMensaje("Ubicación guardada correctamente.")
-                    callback(ubicacionCoche.copy(id = id))
+
+                    // Si hay internet, subir a Firebase
+                    if (ConnectivityHelper.isOnline(this)) {
+                        FirebaseManager.subirUbicacion(ubicConId,
+                            onSuccess = {
+                                sqliteHelper.actualizarSincronizado(id, true)
+                                Log.d("SYNC", "Ubicación $id subida a Firebase")
+                            },
+                            onFailure = {
+                                Log.e("SYNC", "Error subiendo $id", it)
+                            }
+                        )
+                    }
+
+                    callback(ubicConId)
                 } else {
-                    mostrarMensaje("Error al guardar la ubicación.")
+                    mostrarMensaje("Error al guardar la ubicación en SQLite.")
                 }
                 rutaFoto = null
             } else {
@@ -229,12 +269,29 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+
     private fun guardarUbicacionConFoto() {
         if (ultimaUbicacion != null && rutaFoto != null && ultimaUbicacion?.id != null) {
             val rowsAffected = sqliteHelper.actualizarFoto(ultimaUbicacion!!.id!!, rutaFoto!!)
             if (rowsAffected > 0) {
                 Log.d("DEBUG", "Ubicación con foto actualizada en SQLite.")
                 mostrarMensaje("Ubicación con foto guardada correctamente.")
+
+                // Actualizar la última ubicación con la ruta de la foto
+                ultimaUbicacion = ultimaUbicacion!!.copy(fotoRuta = rutaFoto)
+
+                // Si hay conexión, subir a Firebase
+                if (ConnectivityHelper.isOnline(this)) {
+                    FirebaseManager.subirUbicacion(ultimaUbicacion!!,
+                        onSuccess = {
+                            sqliteHelper.actualizarSincronizado(ultimaUbicacion!!.id!!, true)
+                            Log.d("SYNC", "Ubicación con foto sincronizada con Firebase")
+                        },
+                        onFailure = { e ->
+                            Log.e("SYNC", "Error al subir la ubicación con foto", e)
+                        }
+                    )
+                }
             } else {
                 mostrarMensaje("Error al guardar la ubicación con foto.")
             }
@@ -243,6 +300,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
         rutaFoto = null
     }
+
 
     private fun tomarFoto() {
         if (ActivityCompat.checkSelfPermission(
@@ -648,5 +706,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.drawerLayout?.closeDrawer(GravityCompat.START)
         return true
     }
+
+
 
 }

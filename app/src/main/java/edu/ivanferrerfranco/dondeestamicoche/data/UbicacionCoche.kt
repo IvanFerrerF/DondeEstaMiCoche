@@ -23,5 +23,6 @@ data class UbicacionCoche(
     var direccion: String? = null,
     var fotoRuta: String? = null,
     var esActual: Boolean = false,
-    var fechaHoraSalida: String? = null
+    var fechaHoraSalida: String? = null,
+    var sincronizado: Boolean = false
 )

@@ -11,7 +11,7 @@ class SQLiteHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "donde_estami_coche.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 2
         private const val TABLE_UBICACIONES = "ubicaciones"
 
         // Columnas
@@ -33,15 +33,17 @@ class SQLiteHelper(context: Context) :
                 $COLUMN_DIRECCION TEXT,
                 $COLUMN_FECHA TEXT,
                 $COLUMN_HORA TEXT,
-                $COLUMN_FOTO_RUTA TEXT
+                $COLUMN_FOTO_RUTA TEXT,
+                sincronizado INTEGER DEFAULT 0
             )
         """.trimIndent()
         db.execSQL(createTable)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS $TABLE_UBICACIONES")
-        onCreate(db)
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $TABLE_UBICACIONES ADD COLUMN sincronizado INTEGER DEFAULT 0")
+        }
     }
 
     // Método para insertar una nueva ubicación
@@ -102,6 +104,44 @@ class SQLiteHelper(context: Context) :
         db.close()
 
         return filasEliminadas
+    }
+
+    fun actualizarSincronizado(id: Long, sinc: Boolean): Int {
+        val db = writableDatabase
+        val cv = ContentValues().apply {
+            put("sincronizado", if (sinc) 1 else 0)
+        }
+        return db.update(TABLE_UBICACIONES, cv, "id=?", arrayOf(id.toString()))
+    }
+
+    fun obtenerUbicacionesPendientes(): List<UbicacionCoche> {
+        val lista = mutableListOf<UbicacionCoche>()
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT * FROM $TABLE_UBICACIONES WHERE sincronizado=0", null)
+        while (cursor.moveToNext()) {
+            val id = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_ID))
+            val lat = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LATITUD))
+            val lon = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_LONGITUD))
+            val dir = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_DIRECCION))
+            val fecha = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FECHA))
+            val hora = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_HORA))
+            val foto = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_FOTO_RUTA))
+            val sinc = cursor.getInt(cursor.getColumnIndexOrThrow("sincronizado")) == 1
+
+            val ubic = UbicacionCoche(
+                id = id,
+                latitud = lat,
+                longitud = lon,
+                direccion = dir,
+                fecha = fecha,
+                hora = hora,
+                fotoRuta = foto,
+                sincronizado = sinc
+            )
+            lista.add(ubic)
+        }
+        cursor.close()
+        return lista
     }
 
 
