@@ -304,12 +304,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     }
 
     private fun configurarAnimacionLinea(view: View) {
-        ObjectAnimator.ofFloat(view, "translationY", 0f, 1800f).apply {
+        val startY = resources.getDimension(R.dimen.line_movement_start)
+        val endY = resources.getDimension(R.dimen.line_movement_end)
+
+        ObjectAnimator.ofFloat(binding.movingLine, "translationY", startY, endY).apply {
             duration = 3000
             repeatCount = ObjectAnimator.INFINITE
             repeatMode = ObjectAnimator.REVERSE
             start()
         }
+
     }
 
     private fun solicitarPermisos() {
@@ -581,8 +585,8 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     override fun onNavigationItemSelected(item: android.view.MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_ayuda -> {
-                // Lógica para la ayuda
-                //startActivity(Intent(this, AyudaActivity::class.java))
+                val intent = Intent(this, AyudaIAActivity::class.java)
+                startActivity(intent)
             }
             R.id.nav_brain -> {
                 // En lugar de startActivity, mostramos el diálogo:

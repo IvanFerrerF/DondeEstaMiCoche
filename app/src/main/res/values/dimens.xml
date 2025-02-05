@@ -1,0 +1,4 @@
+<resources>
+    <dimen name="line_movement_start">40dp</dimen>
+    <dimen name="line_movement_end">644dp</dimen>
+</resources>
