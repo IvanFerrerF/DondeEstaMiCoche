@@ -67,14 +67,19 @@ class LugarAdapter(
         val semaforoDrawable = if (lugar.esActual) R.drawable.semaforo_green else R.drawable.semaforo_red
         holder.semaforo.setBackgroundResource(semaforoDrawable)
 
+        val activity = holder.itemView.context as AppCompatActivity
+        val sqliteHelper = SQLiteHelper(activity)
+
         // Evento de clic: se muestra un diálogo con opciones de ver mapa, marcar como no aparcado o eliminar
         holder.itemView.setOnClickListener {
-            val activity = holder.itemView.context as AppCompatActivity
             val dialog = DetalleLugarDialog(
                 lugar = lugar,
                 rutaFoto = lugar.fotoRuta,
                 onNoAparcado = {
-                    // Marcar como no aparcado y actualizar la vista
+                    // Marcar como no aparcado en la BD
+                    if (lugar.id != null) {
+                        sqliteHelper.actualizarEstadoAparcamiento(lugar.id!!, false)
+                    }
                     lugar.esActual = false
                     notifyItemChanged(position)
                 },
@@ -87,7 +92,6 @@ class LugarAdapter(
                 },
                 onEliminar = {
                     // Eliminar el registro de la base de datos y de la lista
-                    val sqliteHelper = SQLiteHelper(activity)
                     if (lugar.id != null) {
                         sqliteHelper.borrarUbicacion(lugar.id!!)
                     }
@@ -101,8 +105,6 @@ class LugarAdapter(
 
         // Evento de mantener presionado: elimina el lugar directamente
         holder.itemView.setOnLongClickListener {
-            val activity = holder.itemView.context as AppCompatActivity
-            val sqliteHelper = SQLiteHelper(activity)
             if (lugar.id != null) {
                 sqliteHelper.borrarUbicacion(lugar.id!!)
             }
