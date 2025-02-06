@@ -224,8 +224,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location ->
             if (location != null) {
-                val fechaHora =
-                    SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
+                val fechaHora = SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault()).format(Date())
                 val ubicacionCoche = UbicacionCoche(
                     id = null,
                     latitud = location.latitude,
@@ -234,16 +233,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                     fecha = fechaHora.split(" ")[0],
                     hora = fechaHora.split(" ")[1],
                     fotoRuta = rutaFoto,
-                    sincronizado = false
+                    sincronizado = false,
+                    esActual = false // inicialmente falso
                 )
 
                 val id = sqliteHelper.insertarUbicacion(ubicacionCoche)
                 if (id != -1L) {
-                    val ubicConId = ubicacionCoche.copy(id = id)
+                    // Marca la nueva ubicación como la única actual
+                    sqliteHelper.marcarComoActual(id)
+                    // Actualiza el objeto para reflejar que es la actual
+                    val ubicConId = ubicacionCoche.copy(id = id, esActual = true)
                     ultimaUbicacion = ubicConId
                     mostrarMensaje("Ubicación guardada correctamente.")
 
-                    // Si hay internet, subir a Firebase
+                    // Subida a Firebase si hay conexión (como ya tienes)
                     if (ConnectivityHelper.isOnline(this)) {
                         FirebaseManager.subirUbicacion(ubicConId,
                             onSuccess = {
@@ -255,7 +258,6 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
                             }
                         )
                     }
-
                     callback(ubicConId)
                 } else {
                     mostrarMensaje("Error al guardar la ubicación en SQLite.")
@@ -268,6 +270,7 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
             mostrarMensaje("Error al obtener la ubicación: ${exception.localizedMessage}")
         }
     }
+
 
 
     private fun guardarUbicacionConFoto() {
