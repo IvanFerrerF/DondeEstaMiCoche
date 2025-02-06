@@ -110,9 +110,18 @@ class DetalleLugarDialog(
 
         binding.btnVerEnMapa.setOnClickListener { onVerMapa() }
         binding.btnEliminar.setOnClickListener {
-            onEliminar()
-            dismiss()
+            val eliminarDialog = EliminarAparcamientoDialog(
+                onConfirmar = {
+                    // Eliminar el registro de la base de datos y de la lista
+                    onEliminar()
+                },
+                onCancelar = {
+                    // No hacer nada, solo cancelar
+                }
+            )
+            eliminarDialog.show(requireActivity().supportFragmentManager, "EliminarAparcamientoDialog")
         }
+
         binding.btnCerrar.setOnClickListener { dismiss() }
         binding.btnCompartirUbicacion.setOnClickListener { compartirUbicacion() }
     }
