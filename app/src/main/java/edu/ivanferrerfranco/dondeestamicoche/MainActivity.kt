@@ -39,7 +39,13 @@ import androidx.core.view.GravityCompat
 import edu.ivanferrerfranco.dondeestamicoche.firebase.FirebaseManager
 import edu.ivanferrerfranco.dondeestamicoche.utils.ConnectivityHelper
 
-
+/**
+ * Actividad principal de la aplicación.
+ *
+ * Esta actividad se encarga de configurar la interfaz principal, gestionar la navegación a través del
+ * Drawer, manipular eventos de botones y manejar la lógica de obtención y guardado de la ubicación del coche,
+ * así como la configuración de alarmas y eventos.
+ */
 class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
 
     private lateinit var binding: ActivityMainBinding
@@ -59,6 +65,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
     private var userLng: Double = 0.0
     private var mostrarDialogoDetener = false
 
+    /**
+     * Método del ciclo de vida llamado al crear la actividad.
+     *
+     * Inicializa la interfaz de usuario, configura la Toolbar, Drawer y NavigationView, y establece las acciones
+     * para los diferentes botones. También se encarga de restaurar el estado anterior y configurar alarmas y eventos.
+     *
+     * @param savedInstanceState Bundle con el estado previamente guardado.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -186,11 +200,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         inicializarAlarma()
     }
 
+    /**
+     * Método del ciclo de vida que se ejecuta cuando la actividad vuelve a primer plano.
+     *
+     * Se utiliza para sincronizar ubicaciones pendientes.
+     */
     override fun onResume() {
         super.onResume()
         sincronizarPendientes()
     }
 
+    /**
+     * Sincroniza las ubicaciones pendientes almacenadas en SQLite con Firebase,
+     * siempre que haya conexión a Internet.
+     */
     private fun sincronizarPendientes() {
         if (ConnectivityHelper.isOnline(this)) {
             val pendientes = sqliteHelper.obtenerUbicacionesPendientes()
@@ -208,6 +231,14 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Guarda la ubicación actual del coche.
+     *
+     * Obtiene la última ubicación usando los servicios de ubicación, guarda la información en SQLite,
+     * marca la ubicación como actual y, de haber conexión, la sincroniza con Firebase.
+     *
+     * @param callback Función que recibe la ubicación guardada.
+     */
     private fun guardarUbicacionCoche(callback: (UbicacionCoche) -> Unit) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
@@ -271,8 +302,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
-
-
+    /**
+     * Guarda la foto asociada a la última ubicación, actualizándola en SQLite y sincronizándola con Firebase si es posible.
+     */
     private fun guardarUbicacionConFoto() {
         if (ultimaUbicacion != null && rutaFoto != null && ultimaUbicacion?.id != null) {
             val rowsAffected = sqliteHelper.actualizarFoto(ultimaUbicacion!!.id!!, rutaFoto!!)
@@ -304,7 +336,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         rutaFoto = null
     }
 
-
+    /**
+     * Inicia la captura de una foto mediante la cámara.
+     *
+     * Verifica permisos de cámara y lanza la actividad de captura.
+     */
     private fun tomarFoto() {
         if (ActivityCompat.checkSelfPermission(
                 this,
@@ -322,6 +358,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Guarda la imagen capturada en almacenamiento interno.
+     *
+     * @param bitmap Imagen capturada.
+     * @return Ruta absoluta del archivo guardado o null en caso de error.
+     */
     private fun guardarFoto(bitmap: Bitmap): String? {
         return try {
             val fileName = "foto_aparcamiento_${System.currentTimeMillis()}.jpg"
@@ -339,6 +381,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Método deprecado para el manejo del resultado de la actividad de captura de imagen.
+     *
+     * @param requestCode Código de solicitud.
+     * @param resultCode Código de resultado.
+     * @param data Intent con datos de la actividad.
+     */
     @Deprecated("Deprecated in favor of Activity Result API")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -360,10 +409,20 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Muestra un mensaje breve en pantalla.
+     *
+     * @param mensaje Texto a mostrar.
+     */
     private fun mostrarMensaje(mensaje: String) {
         Toast.makeText(this, mensaje, Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Configura una animación para mover una línea de manera infinita.
+     *
+     * @param view Vista que se animará.
+     */
     private fun configurarAnimacionLinea(view: View) {
         val startY = resources.getDimension(R.dimen.line_movement_start)
         val endY = resources.getDimension(R.dimen.line_movement_end)
@@ -377,6 +436,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
 
     }
 
+    /**
+     * Solicita los permisos necesarios para la ubicación, cámara y, según la versión, almacenamiento.
+     */
     private fun solicitarPermisos() {
         val permisos = mutableListOf(
             Manifest.permission.ACCESS_FINE_LOCATION,
@@ -393,6 +455,13 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
+    /**
+     * Maneja la respuesta del usuario a la solicitud de permisos.
+     *
+     * @param requestCode Código de solicitud.
+     * @param permissions Permisos solicitados.
+     * @param grantResults Resultados de la solicitud.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,
@@ -428,6 +497,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Comparte la última ubicación guardada mediante una intención de envío.
+     */
     private fun compartirUbicacion() {
         if (ultimaUbicacion != null) {
             val mensaje = """
@@ -451,6 +523,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Obtiene la ubicación actual del usuario y ejecuta un callback con latitud y longitud.
+     *
+     * @param callback Función a ejecutar con la latitud y longitud obtenidas.
+     */
     private fun obtenerUbicacionActual(callback: (Double, Double) -> Unit) {
         val fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
         if (ActivityCompat.checkSelfPermission(
@@ -471,6 +548,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Busca aparcamientos cercanos utilizando la API de Google Places.
+     *
+     * @param latitud Latitud de la ubicación actual.
+     * @param longitud Longitud de la ubicación actual.
+     */
     private fun buscarAparcamientosCercanos(latitud: Double, longitud: Double) {
         val sharedPreferences = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
         val radio = sharedPreferences.getInt("radio_busqueda", 1000)
@@ -516,6 +599,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         })
     }
 
+    /**
+     * Procesa la respuesta JSON de la API para extraer las ubicaciones de los aparcamientos
+     * y lanza la actividad que muestra el mapa con dichos marcadores.
+     *
+     * @param jsonResponse Cadena JSON con la respuesta de la API.
+     */
     private fun procesarResultados(jsonResponse: String) {
         try {
             val jsonObject = org.json.JSONObject(jsonResponse)
@@ -546,6 +635,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Configura una alarma exacta para la hora indicada.
+     *
+     * @param calendar Objeto [Calendar] que representa la hora de la alarma.
+     */
     @SuppressLint("ScheduleExactAlarm")
     private fun configurarAlarma(calendar: Calendar) {
         val intent = Intent(this, AlarmReceiver::class.java).apply {
@@ -568,6 +662,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
+    /**
+     * Muestra un diálogo para detener la alarma en ejecución.
+     */
     private fun mostrarDialogoDetenerAlarma() {
         mostrarDialogoDetener = true
         val dialog = StopAlarmDialog(
@@ -581,6 +678,11 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         dialog.show(supportFragmentManager, "StopAlarmDialog")
     }
 
+    /**
+     * Guarda el estado actual de la actividad, incluyendo la última ubicación y la bandera de diálogo.
+     *
+     * @param outState Bundle en el que se guardan los datos.
+     */
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         outState.putBoolean("mostrarDialogoDetener", mostrarDialogoDetener)
@@ -593,6 +695,9 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Inicializa la alarma sin programarla, configurando el intent asociado.
+     */
     private fun inicializarAlarma() {
         val alarmIntent = Intent(this, AlarmReceiver::class.java).apply {
             putExtra("show_dialog", true)
@@ -605,6 +710,15 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         )
     }
 
+    /**
+     * Agrega un evento al calendario del dispositivo.
+     *
+     * @param titulo Título del evento.
+     * @param ubicacion Ubicación del evento.
+     * @param descripcion Descripción del evento.
+     * @param inicio Tiempo de inicio en milisegundos.
+     * @param fin Tiempo de fin en milisegundos.
+     */
     private fun agregarEventoCalendario(
         titulo: String,
         ubicacion: String,
@@ -628,12 +742,16 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Configura la barra de publicidad en la interfaz.
+     */
     private fun configurarBarraPublicidad() {
         binding.adText.text = "¡Oferta especial! 🚗 10% de descuento en estacionamientos."
     }
 
-
-
+    /**
+     * Maneja el evento de retroceso para cerrar el Drawer si está abierto.
+     */
     override fun onBackPressed() {
         // Cerrar el Drawer si está abierto
         if (binding.drawerLayout?.isDrawerOpen(GravityCompat.START) == true) {
@@ -643,6 +761,12 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         }
     }
 
+    /**
+     * Maneja la selección de ítems en el NavigationView.
+     *
+     * @param item Elemento del menú seleccionado.
+     * @return `true` si el evento se procesó correctamente.
+     */
     override fun onNavigationItemSelected(item: android.view.MenuItem): Boolean {
         when (item.itemId) {
             R.id.nav_ayuda -> {
@@ -709,7 +833,5 @@ class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelecte
         binding.drawerLayout?.closeDrawer(GravityCompat.START)
         return true
     }
-
-
 
 }

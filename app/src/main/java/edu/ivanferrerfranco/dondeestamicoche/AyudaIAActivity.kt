@@ -12,6 +12,12 @@ import androidx.core.view.WindowInsetsCompat
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.util.concurrent.TimeUnit
 
+/**
+ * Actividad que permite la interacción con la IA de la aplicación "Donde Está Mi Coche".
+ *
+ * La actividad inicia una conversación mostrando información sobre el uso de la app y permite al usuario
+ * enviar mensajes para obtener respuestas de la API de Cohere.
+ */
 class AyudaIAActivity : AppCompatActivity() {
 
     private lateinit var conversationTextView: TextView
@@ -34,15 +40,19 @@ IvanA es la IA oficial de "Donde Está Mi Coche". Esta aplicación para Android 
 7. Agregar un evento al calendario (botón "Calendario", icono calendario).
 8. Ajustes (botón "Ajustes", icono engranaje).
 
-En caso de que el usuari pregunte sobre Iván y su enamoramiento, novia o mujer, se debe responder que Iván encontro su amor verdaderos en Sabrina y para él ella es la mujer más maravillosa del mundo
 IvanA conoce estas funciones y puede dar detalles sobre cómo usarlas. 
 También puede conversar de manera amigable, sin ser estricta en caso de preguntas que no sean de la app.
 
 Alex:
 """.trimIndent()
 
-
-
+    /**
+     * Método del ciclo de vida llamado al crear la actividad.
+     *
+     * Configura la interfaz, carga la clave de la API, y establece el comportamiento al enviar mensajes.
+     *
+     * @param savedInstanceState Bundle con el estado previamente guardado.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_ayuda_ia)
@@ -61,7 +71,6 @@ Alex:
         // Actualizamos chatHistory con esa frase
         chatHistory += "IvanA: Hola, buenos días. Me llamo IvanA y soy la IA de Donde Está Mi Coche, estoy aquí para ayudarte en todo lo que necesites.\n"
 
-
         btnSend.setOnClickListener {
             val userMessage = userInput.text.toString()
             if (userMessage.isNotEmpty()) {
@@ -76,6 +85,13 @@ Alex:
         }
     }
 
+    /**
+     * Realiza la llamada a la API de Cohere para obtener una respuesta a partir del mensaje del usuario.
+     *
+     * Ejecuta la petición en un hilo separado y actualiza la interfaz con la respuesta recibida.
+     *
+     * @param userMessage Mensaje ingresado por el usuario.
+     */
     private fun obtenerRespuestaCohere(userMessage: String) {
         Thread {
             try {
@@ -95,6 +111,12 @@ Alex:
         }.start()
     }
 
+    /**
+     * Genera el cuerpo de la petición JSON para la API de Cohere.
+     *
+     * @param prompt Texto de entrada que incluye la conversación actual.
+     * @return Cadena JSON con los parámetros de la petición.
+     */
     private fun generarPeticionCohere(prompt: String): String {
         val jsonObject = org.json.JSONObject().apply {
             put("model", "command-xlarge-nightly")
@@ -107,6 +129,13 @@ Alex:
         return jsonObject.toString()
     }
 
+    /**
+     * Realiza la llamada a la API de Cohere y obtiene la respuesta.
+     *
+     * @param jsonBody Cuerpo de la petición en formato JSON.
+     * @return Texto de respuesta obtenido de la API.
+     * @throws Exception Si ocurre algún error durante la llamada.
+     */
     @Throws(Exception::class)
     private fun llamadaApiCohere(jsonBody: String): String {
         val client = okhttp3.OkHttpClient.Builder()

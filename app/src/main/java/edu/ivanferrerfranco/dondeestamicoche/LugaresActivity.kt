@@ -29,6 +29,13 @@ class LugaresActivity : AppCompatActivity() {
     // Instancia del helper de SQLite
     private lateinit var sqliteHelper: SQLiteHelper
 
+    /**
+     * Método del ciclo de vida llamado al crear la actividad.
+     *
+     * Inicializa la interfaz, configura el RecyclerView y carga la lista de lugares desde SQLite.
+     *
+     * @param savedInstanceState Bundle con el estado previamente guardado.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityLugaresBinding.inflate(layoutInflater)
@@ -55,8 +62,10 @@ class LugaresActivity : AppCompatActivity() {
     }
 
     /**
-     * Actualiza las direcciones de los lugares utilizando el Geocoder.
+     * Actualiza las direcciones de los lugares utilizando el [Geocoder].
      * Para cada lugar se obtienen los datos de la dirección basados en sus coordenadas.
+     *
+     * @param lugares Lista de ubicaciones a actualizar.
      */
     @SuppressLint("NotifyDataSetChanged")
     private fun actualizarDirecciones(lugares: List<UbicacionCoche>) {

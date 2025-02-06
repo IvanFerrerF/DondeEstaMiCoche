@@ -16,6 +16,10 @@ import edu.ivanferrerfranco.dondeestamicoche.databinding.ActivityAjustesBinding
 import edu.ivanferrerfranco.dondeestamicoche.data.UbicacionCoche
 import edu.ivanferrerfranco.dondeestamicoche.dialogs.RadioBusquedaDialogFragment
 
+/**
+ * Actividad que permite configurar ajustes de la aplicación, como borrar el historial,
+ * modificar el radio de búsqueda, gestionar permisos y acceder a la configuración del sistema.
+ */
 class AjustesActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityAjustesBinding
@@ -27,6 +31,13 @@ class AjustesActivity : AppCompatActivity() {
         Manifest.permission.CAMERA
     )
 
+    /**
+     * Método del ciclo de vida llamado al crear la actividad.
+     *
+     * Configura la interfaz y establece los listeners para las acciones de ajustes.
+     *
+     * @param savedInstanceState Bundle con el estado previamente guardado.
+     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityAjustesBinding.inflate(layoutInflater)
@@ -52,6 +63,9 @@ class AjustesActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Muestra un diálogo para confirmar el borrado del historial de lugares guardados.
+     */
     private fun mostrarConfirmacionBorrarHistorial() {
         AlertDialog.Builder(this)
             .setTitle("Confirmar acción")
@@ -61,18 +75,31 @@ class AjustesActivity : AppCompatActivity() {
             .create().show()
     }
 
+    /**
+     * Borra el historial de ubicaciones almacenado en SQLite.
+     */
     private fun borrarHistorial() {
         val sqliteHelper = SQLiteHelper(this)
         sqliteHelper.borrarHistorial()
         Toast.makeText(this, "Historial borrado correctamente.", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Guarda el radio de búsqueda seleccionado en las preferencias de la aplicación.
+     *
+     * @param radio Valor del radio de búsqueda en metros.
+     */
     private fun guardarRadioBusqueda(radio: Int) {
         val sharedPreferences = getSharedPreferences("Ajustes", Context.MODE_PRIVATE)
         sharedPreferences.edit().putInt("radio_busqueda", radio).apply()
         Toast.makeText(this, "Radio de búsqueda guardado: $radio metros", Toast.LENGTH_SHORT).show()
     }
 
+    /**
+     * Solicita un permiso específico, mostrando una explicación si es necesario.
+     *
+     * @param permiso Permiso que se desea solicitar.
+     */
     private fun pedirPermiso(permiso: String) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, permiso)) {
             AlertDialog.Builder(this)
@@ -89,6 +116,11 @@ class AjustesActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Muestra un diálogo indicando cómo revocar un permiso ya concedido.
+     *
+     * @param permiso Permiso sobre el que se quiere mostrar la información.
+     */
     private fun mostrarDialogoIrAConfiguracion(permiso: String) {
         AlertDialog.Builder(this)
             .setTitle("Revocar permiso")
@@ -106,6 +138,11 @@ class AjustesActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Abre la pantalla de configuración de la aplicación en el sistema.
+     *
+     * @param context Contexto de la aplicación.
+     */
     private fun abrirConfiguracionDeAplicacion(context: Context) {
         val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
             data = Uri.fromParts("package", context.packageName, null)
@@ -113,6 +150,9 @@ class AjustesActivity : AppCompatActivity() {
         context.startActivity(intent)
     }
 
+    /**
+     * Muestra un diálogo explicativo acerca de la funcionalidad de cambio de idioma.
+     */
     private fun mostrarDialogoExplicativo() {
         val mensajeExplicativo = """
             NOTA:
@@ -135,6 +175,13 @@ class AjustesActivity : AppCompatActivity() {
             .show()
     }
 
+    /**
+     * Maneja la respuesta del usuario a la solicitud de permisos.
+     *
+     * @param requestCode Código de solicitud.
+     * @param permissions Permisos solicitados.
+     * @param grantResults Resultados de la solicitud.
+     */
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

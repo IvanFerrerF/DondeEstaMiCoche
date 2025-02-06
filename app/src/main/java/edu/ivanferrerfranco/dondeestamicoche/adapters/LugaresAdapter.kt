@@ -16,9 +16,10 @@ import edu.ivanferrerfranco.dondeestamicoche.database.SQLiteHelper
 import edu.ivanferrerfranco.dondeestamicoche.dialogs.DetalleLugarDialog
 
 /**
- * Adapter para manejar la lista de ubicaciones del coche en un RecyclerView.
+ * Adaptador para gestionar la lista de ubicaciones del coche en un RecyclerView.
+ * Permite visualizar, actualizar y eliminar ubicaciones guardadas en la base de datos.
  *
- * @property lugares Lista mutable de ubicaciones del coche.
+ * @property lugares Lista mutable de ubicaciones del coche almacenadas.
  */
 class LugarAdapter(
     private val lugares: MutableList<UbicacionCoche>
@@ -27,20 +28,20 @@ class LugarAdapter(
     /**
      * ViewHolder para gestionar los elementos individuales de la lista de lugares.
      *
-     * @param itemView Vista correspondiente al elemento.
+     * @param itemView Vista correspondiente al elemento en la lista.
      */
     inner class LugarViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val tvLugar: TextView = itemView.findViewById(R.id.tvLugar)
-        val tvCoordenadas: TextView = itemView.findViewById(R.id.tvCoordenadas)
-        val tvFechaHora: TextView = itemView.findViewById(R.id.tvFechaHora)
-        val semaforo: View = itemView.findViewById(R.id.semaforo)
+        val tvLugar: TextView = itemView.findViewById(R.id.tvLugar) // Muestra la dirección del lugar.
+        val tvCoordenadas: TextView = itemView.findViewById(R.id.tvCoordenadas) // Muestra las coordenadas (latitud y longitud).
+        val tvFechaHora: TextView = itemView.findViewById(R.id.tvFechaHora) // Muestra la fecha y hora de registro.
+        val semaforo: View = itemView.findViewById(R.id.semaforo) // Indica si el lugar es el aparcamiento actual.
     }
 
     /**
-     * Crea la vista para un elemento de la lista.
+     * Crea la vista para un elemento de la lista inflándola desde el layout correspondiente.
      *
      * @param parent El contenedor padre al que se añadirá la vista.
-     * @param viewType El tipo de vista.
+     * @param viewType El tipo de vista, aunque no se usa ya que es un solo tipo de item.
      * @return Un ViewHolder que contiene la vista inflada.
      */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LugarViewHolder {
@@ -49,52 +50,63 @@ class LugarAdapter(
     }
 
     /**
-     * Vincula los datos del lugar al ViewHolder correspondiente.
+     * Vincula los datos de una ubicación específica al ViewHolder correspondiente.
      *
-     * @param holder El ViewHolder para el elemento actual.
-     * @param position La posición del elemento en la lista.
+     * @param holder El ViewHolder que representa el elemento actual en la lista.
+     * @param position La posición del elemento dentro de la lista.
      */
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: LugarViewHolder, position: Int) {
         val lugar = lugares[position]
 
-        // Configurar textos para mostrar la dirección, coordenadas y fecha/hora
+        // Muestra la dirección o un mensaje alternativo si no hay datos disponibles.
         holder.tvLugar.text = if (lugar.direccion?.isNotEmpty() == true) lugar.direccion else "Dirección no disponible"
+
+        // Muestra las coordenadas en formato Latitud / Longitud.
         holder.tvCoordenadas.text = "Lat: ${lugar.latitud}, Lon: ${lugar.longitud}"
+
+        // Muestra la fecha y hora de registro de la ubicación.
         holder.tvFechaHora.text = "Fecha y hora: ${lugar.fecha} ${lugar.hora}"
 
-        // Cambiar el semáforo según el estado de 'esActual'
+        // Modifica el color del semáforo según si es el lugar actual de aparcamiento.
         val semaforoDrawable = if (lugar.esActual) R.drawable.semaforo_green else R.drawable.semaforo_red
         holder.semaforo.setBackgroundResource(semaforoDrawable)
 
+        // Obtener la actividad asociada al contexto y la base de datos.
         val activity = holder.itemView.context as AppCompatActivity
         val sqliteHelper = SQLiteHelper(activity)
 
-        // Evento de clic: se muestra un diálogo con opciones de ver mapa, marcar como no aparcado o eliminar
+        /**
+         * Evento de clic en el elemento de la lista.
+         * Muestra un diálogo con opciones para ver la ubicación en el mapa,
+         * marcar como no aparcado o eliminar el registro.
+         */
         holder.itemView.setOnClickListener {
             val dialog = DetalleLugarDialog(
                 lugar = lugar,
                 rutaFoto = lugar.fotoRuta,
                 onNoAparcado = {
-                    // Marcar como no aparcado en la BD
+                    // Si la ubicación tiene un ID, se actualiza su estado en la BD a 'no aparcado'.
                     if (lugar.id != null) {
                         sqliteHelper.actualizarEstadoAparcamiento(lugar.id!!, false)
                     }
-                    lugar.esActual = false
-                    notifyItemChanged(position)
+                    lugar.esActual = false // Cambia la bandera en la lista actual.
+                    notifyItemChanged(position) // Notifica el cambio en la vista.
                 },
                 onVerMapa = {
-                    // Abrir MapaActivity con las coordenadas del lugar
-                    val intent = Intent(activity, MapaActivity::class.java)
-                    intent.putExtra("latitud", lugar.latitud)
-                    intent.putExtra("longitud", lugar.longitud)
+                    // Abre la actividad del mapa mostrando la ubicación seleccionada.
+                    val intent = Intent(activity, MapaActivity::class.java).apply {
+                        putExtra("latitud", lugar.latitud)
+                        putExtra("longitud", lugar.longitud)
+                    }
                     activity.startActivity(intent)
                 },
                 onEliminar = {
-                    // Eliminar el registro de la base de datos y de la lista
+                    // Si la ubicación tiene un ID, se elimina de la BD.
                     if (lugar.id != null) {
                         sqliteHelper.borrarUbicacion(lugar.id!!)
                     }
+                    // Se elimina también de la lista de lugares y se notifica al adaptador.
                     lugares.removeAt(position)
                     notifyItemRemoved(position)
                     Toast.makeText(activity, "Aparcamiento eliminado", Toast.LENGTH_SHORT).show()
@@ -103,22 +115,25 @@ class LugarAdapter(
             dialog.show(activity.supportFragmentManager, "DetalleLugarDialog")
         }
 
-        // Evento de mantener presionado: elimina el lugar directamente
+        /**
+         * Evento de mantener presionado un elemento en la lista.
+         * Elimina el registro directamente sin mostrar el diálogo de opciones.
+         */
         holder.itemView.setOnLongClickListener {
             if (lugar.id != null) {
-                sqliteHelper.borrarUbicacion(lugar.id!!)
+                sqliteHelper.borrarUbicacion(lugar.id!!) // Elimina de la base de datos.
             }
-            lugares.removeAt(position)
-            notifyItemRemoved(position)
+            lugares.removeAt(position) // Elimina de la lista en memoria.
+            notifyItemRemoved(position) // Notifica el cambio al RecyclerView.
             Toast.makeText(activity, "Lugar eliminado", Toast.LENGTH_SHORT).show()
-            true
+            true // Indica que el evento ha sido manejado.
         }
     }
 
     /**
-     * Retorna el número de elementos en la lista.
+     * Retorna el número de elementos en la lista de ubicaciones.
      *
-     * @return El tamaño de la lista.
+     * @return Cantidad total de lugares registrados.
      */
     override fun getItemCount() = lugares.size
 }

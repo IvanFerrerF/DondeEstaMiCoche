@@ -6,9 +6,19 @@ import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import edu.ivanferrerfranco.dondeestamicoche.data.UbicacionCoche
 
+/**
+ * SQLiteHelper is a helper class for managing the SQLite database that stores car location data.
+ * It extends [SQLiteOpenHelper] and provides methods for creating, upgrading, and performing CRUD operations
+ * on the "ubicaciones" table.
+ *
+ * @constructor Creates a new instance of SQLiteHelper with the provided [context].
+ */
 class SQLiteHelper(context: Context) :
     SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
 
+    /**
+     * Companion object containing constants for the database name, version, table name, and column names.
+     */
     companion object {
         private const val DATABASE_NAME = "donde_estami_coche.db"
         private const val DATABASE_VERSION = 3
@@ -57,7 +67,7 @@ class SQLiteHelper(context: Context) :
     /**
      * Inserta una nueva ubicación en la base de datos.
      *
-     * @param ubicacion Datos del coche que se desea almacenar (incluyendo si esActual es true o false).
+     * @param ubicacion Datos del coche que se desea almacenar (incluyendo si [UbicacionCoche.esActual] es true o false).
      * @return El ID autogenerado de la fila insertada. Retorna -1 si ocurre algún error.
      */
     fun insertarUbicacion(ubicacion: UbicacionCoche): Long {
@@ -80,8 +90,8 @@ class SQLiteHelper(context: Context) :
     /**
      * Actualiza la foto de una ubicación existente.
      *
-     * @param id        ID de la ubicación que se quiere actualizar.
-     * @param fotoRuta  Nueva ruta de la foto.
+     * @param id ID de la ubicación que se quiere actualizar.
+     * @param fotoRuta Nueva ruta de la foto.
      * @return Número de filas afectadas (debería ser 1 si se actualiza correctamente).
      */
     fun actualizarFoto(id: Long, fotoRuta: String): Int {
@@ -163,7 +173,7 @@ class SQLiteHelper(context: Context) :
     /**
      * Actualiza el campo 'sincronizado' (true/false) para el registro con id = [id].
      *
-     * @param id   Identificador de la fila.
+     * @param id Identificador de la fila.
      * @param sinc Valor booleano que se convertirá a 1 o 0 en la base de datos.
      */
     fun actualizarSincronizado(id: Long, sinc: Boolean): Int {
@@ -222,7 +232,7 @@ class SQLiteHelper(context: Context) :
     /**
      * Actualiza la columna 'esActual' para una ubicación concreta.
      *
-     * @param id       ID de la ubicación a actualizar.
+     * @param id ID de la ubicación a actualizar.
      * @param esActual Valor booleano que indica si la ubicación pasa a ser la 'actual' o no.
      */
     fun actualizarEstadoAparcamiento(id: Long, esActual: Boolean) {
@@ -238,7 +248,7 @@ class SQLiteHelper(context: Context) :
      * Marca la ubicación con [newId] como la única 'actual' (esActual = 1),
      * poniendo el resto de registros con esActual = 0.
      *
-     * @param newId El ID de la ubicación que se quiere marcar en verde (actual).
+     * @param newId El ID de la ubicación que se quiere marcar como la actual.
      */
     fun marcarComoActual(newId: Long) {
         val db = writableDatabase

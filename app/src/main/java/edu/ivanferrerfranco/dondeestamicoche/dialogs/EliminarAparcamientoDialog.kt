@@ -10,14 +10,28 @@ import edu.ivanferrerfranco.dondeestamicoche.databinding.DialogEliminarAparcamie
 
 /**
  * Diálogo personalizado para confirmar la eliminación de un aparcamiento.
+ *
+ * @property onConfirmar Función de callback que se ejecuta cuando el usuario confirma la eliminación.
+ * @property onCancelar Función de callback que se ejecuta cuando el usuario cancela la eliminación.
  */
 class EliminarAparcamientoDialog(
     private val onConfirmar: () -> Unit,
     private val onCancelar: () -> Unit
 ) : DialogFragment() {
 
+    /**
+     * Enlace a la vista del diálogo usando View Binding.
+     */
     private lateinit var binding: DialogEliminarAparcamientoBinding
 
+    /**
+     * Infla la vista del diálogo y la retorna como la raíz del fragmento.
+     *
+     * @param inflater Inflador de vistas.
+     * @param container Contenedor padre de la vista (puede ser nulo).
+     * @param savedInstanceState Estado guardado de la instancia (puede ser nulo).
+     * @return La vista raíz inflada del diálogo.
+     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -26,19 +40,37 @@ class EliminarAparcamientoDialog(
         return binding.root
     }
 
+    /**
+     * Configura los elementos de la vista una vez creada.
+     *
+     * @param view Vista raíz del fragmento.
+     * @param savedInstanceState Estado guardado de la instancia (puede ser nulo).
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Mensaje que se muestra en el diálogo
         binding.tvDialogMensaje.text = "¿Deseas eliminar este aparcamiento?"
+
+        // Acción al presionar el botón de aceptar
         binding.btnAceptar.setOnClickListener {
             onConfirmar()
-            dismiss()
+            dismiss() // Cierra el diálogo
         }
+
+        // Acción al presionar el botón de cancelar
         binding.btnCancelar.setOnClickListener {
             onCancelar()
-            dismiss()
+            dismiss() // Cierra el diálogo
         }
     }
 
+    /**
+     * Crea el diálogo y le aplica un fondo transparente para un diseño más limpio.
+     *
+     * @param savedInstanceState Estado guardado de la instancia (puede ser nulo).
+     * @return El diálogo personalizado con fondo transparente.
+     */
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = super.onCreateDialog(savedInstanceState)
         dialog.window?.setBackgroundDrawableResource(android.R.color.transparent)

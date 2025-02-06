@@ -29,7 +29,9 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * Método llamado al crear la actividad.
      *
-     * @param savedInstanceState Estado guardado anteriormente, si existe.
+     * Configura el fragmento del mapa y realiza un log de la ejecución.
+     *
+     * @param savedInstanceState Bundle con el estado previamente guardado.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,7 +46,10 @@ class MapaActivity : AppCompatActivity(), OnMapReadyCallback {
     /**
      * Método llamado cuando el mapa está listo para usarse.
      *
-     * @param map Objeto GoogleMap inicializado.
+     * Recupera la ubicación del coche desde el intent y muestra en el mapa la ubicación del coche,
+     * un marcador de referencia o la ubicación actual del usuario.
+     *
+     * @param map Objeto [GoogleMap] inicializado.
      */
     override fun onMapReady(map: GoogleMap) {
         googleMap = map

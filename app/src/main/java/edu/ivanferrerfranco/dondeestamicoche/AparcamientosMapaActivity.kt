@@ -33,6 +33,8 @@ class AparcamientosMapaActivity : AppCompatActivity(), OnMapReadyCallback {
      * Configura la actividad al ser creada.
      * Recupera las listas de aparcamientos, nombres y la ubicación del usuario desde el intent.
      * Inicia la configuración del fragmento de mapa.
+     *
+     * @param savedInstanceState Bundle con el estado previamente guardado.
      */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
